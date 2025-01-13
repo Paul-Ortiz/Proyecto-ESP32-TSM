@@ -1,6 +1,8 @@
 import network, utime, machine
 from machine import Pin
 from time import sleep
+import time
+
 # Replace the following with your WIFI Credentials
 SSID = "tsm"
 SSID_PASSWORD = "123456789"
@@ -20,7 +22,10 @@ def do_connect():
 print("Connecting to your wifi...")
 do_connect()
 
+# Definir entradas y salidas
 led = Pin(2, Pin.OUT)
+btn = Pin(3, Pin.IN)
+
 # Functions mqtt
 def sub_cb(topic, msg):
     print((topic, msg))
@@ -47,15 +52,26 @@ mqttc.set_callback(sub_cb)
 mqttc.connect()
 
 ### ----------------------
-
-# Subscriber topic setup
+# Publisher topic node
+BTN_TOPIC = CLIENT_NAME.encode() + b'/btn/1'
+# Subscriber topic node
 CLICK_TOPIC = CLIENT_NAME.encode() + b'/btn/0'   #node/btn/0
 mqttc.subscribe(CLICK_TOPIC)
 
+# Definir variables para el tiempo
+last_time = 0
+presente_time = 0
+delay = 1000
 while True:
     try:
         mqttc.check_msg()
-        
+        present_time = time.ticks_ms()
+        #print(present_time)
+        if present_time - last_time > delay:
+            btnVar  = btn.value()  
+            mqttc.publish( BTN_TOPIC, str(btnVar).encode())
+            print("publishing...")
+            last_time = present_time
     except OSError as e:
         print(e)
         reset()

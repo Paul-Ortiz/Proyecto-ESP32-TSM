@@ -27,8 +27,8 @@ from machine import Pin
 from time import sleep
 
 ### --- same as before ---
-CLIENT_NAME = 'blue'
-BROKER_ADDR = '192.168.137.1'
+CLIENT_NAME = 'node'
+BROKER_ADDR = '192.168.1.241'
 mqttc = MQTTClient(CLIENT_NAME, BROKER_ADDR, keepalive=60)
 mqttc.connect()
 ### ----------------------
